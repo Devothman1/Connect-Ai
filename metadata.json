@@ -1,0 +1,8 @@
+{
+  "name": "Connect Ai",
+  "description": "A sleek, responsive AI chatbot interface powered by the Gemini API. Engage in natural, flowing conversations with a state-of-the-art AI, featuring real-time streaming responses for a dynamic user experience.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ]
+}
