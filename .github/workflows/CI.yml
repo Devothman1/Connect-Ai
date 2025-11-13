@@ -50,3 +50,30 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+# ... المحتوى الحالي ...
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      # ⬇️⬇️ أضف هذه الخطوة الجديدة هنا ⬇️⬇️
+      - name: Generate package-lock.json
+        run: npm install --package-lock-only
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+# ... باقي المحتوى ...
