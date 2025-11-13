@@ -55,7 +55,11 @@ export const SummarizerView: React.FC = () => {
         setOutput('');
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const apiKey = process.env.API_KEY;
+            if (!apiKey) {
+                throw new Error("Gemini API key is not configured. Please ensure the API_KEY environment variable is set.");
+            }
+            const ai = new GoogleGenAI({ apiKey });
             const prompt = `Provide a ${summaryType === 'bullets' ? 'bullet-point' : 'concise paragraph'} summary of the following text. The summary should capture the main ideas and key information. Format your response using Markdown.
 Text to summarize:
 ---

@@ -7,7 +7,11 @@ import { SendIcon, PaperclipIcon, XCircleIcon, SquareIcon, EyeIcon } from './Ico
 // --- Gemini Service Functions (adapted for this component) ---
 
 const initializeVisionChat = (history: ChatMessage[] = []): Chat => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("Gemini API key is not configured. Please ensure the API_KEY environment variable is set.");
+  }
+  const ai = new GoogleGenAI({ apiKey });
   return ai.chats.create({
     model: 'gemini-2.5-flash', // This model supports multimodal input
     history: history.map(msg => ({
@@ -70,12 +74,12 @@ export const VisionView: React.FC = () => {
         setMessages(prev => [...prev, userMessage]);
         setIsLoading(true);
         
-        chatRef.current = initializeVisionChat(messages);
-        abortControllerRef.current = new AbortController();
         const modelMessageId = (Date.now() + 1).toString();
 
         try {
+            chatRef.current = initializeVisionChat(messages);
             setMessages(prev => [...prev, { id: modelMessageId, role: MessageRole.MODEL, content: '' }]);
+            abortControllerRef.current = new AbortController();
             
             const stream = await streamVisionResponse(chatRef.current, userMessage.content, currentImages, abortControllerRef.current.signal);
             let fullResponse = '';

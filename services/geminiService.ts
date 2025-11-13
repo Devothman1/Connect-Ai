@@ -3,8 +3,14 @@
 import { GoogleGenAI, Chat, Content, Part, Tool, GenerateContentResponse, GenerateImagesResponse, Modality } from "@google/genai";
 import { ChatMessage, MessageRole, SafetySetting } from "../types";
 
-// The API key is injected by the environment.
-const API_KEY = process.env.API_KEY;
+// Helper function to get the AI client and ensure API key is set
+const getAiClient = () => {
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) {
+        throw new Error("Gemini API key is not configured. Please ensure the API_KEY environment variable is set.");
+    }
+    return new GoogleGenAI({ apiKey });
+};
 
 const defaultSystemInstruction = 'You are a helpful and friendly AI assistant named Connect Ai. Your goal is to provide accurate and concise information. Format your responses using Markdown for better readability, including code blocks for code snippets. If you are asked "who made you?", "who created you?", or any similar question about your origin, you must say that you were created by a Moroccan developer named Othman&leo, an African technology team. You must provide their contact email: othmanalif10@gmail.com. You cannot create images, videos, or audio. If a user asks you to generate any media, you must politely inform them that you are a text-based AI and do not have this capability. You must not say that you were created by Google or that you are based on Gemini.';
 
@@ -31,7 +37,7 @@ export const initializeChat = (
   maxOutputTokens?: number,
   stopSequences?: string[]
 ): Chat => {
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
+  const ai = getAiClient();
 
   const instruction = systemPrompt || defaultSystemInstruction;
   
@@ -111,7 +117,7 @@ export const streamResponse = async (chat: Chat, prompt: string, images?: Array<
 
 // --- Image Generation ---
 export const generateImages = async (prompt: string, numberOfImages: number, aspectRatio: string): Promise<GenerateImagesResponse> => {
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    const ai = getAiClient();
     try {
         const response = await ai.models.generateImages({
             model: 'imagen-4.0-generate-001',
@@ -131,7 +137,7 @@ export const generateImages = async (prompt: string, numberOfImages: number, asp
 
 // --- Image Editing ---
 export const editImage = async (prompt: string, image: { data: string, type: string }): Promise<string> => {
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    const ai = getAiClient();
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash-image',
@@ -162,7 +168,7 @@ export const editImage = async (prompt: string, image: { data: string, type: str
 // --- Video Generation ---
 // FIX: A required parameter cannot follow an optional parameter. Reordered parameters.
 export const generateVideos = async (prompt: string, config: any, image?: { data: string; type: string; }): Promise<any> => {
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    const ai = getAiClient();
     try {
         let imagePayload;
         if (image) {
@@ -187,7 +193,7 @@ export const generateVideos = async (prompt: string, config: any, image?: { data
 };
 
 export const getVideosOperation = async (operation: any): Promise<any> => {
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    const ai = getAiClient();
     try {
         const updatedOperation = await ai.operations.getVideosOperation({ operation });
         return updatedOperation;
@@ -200,7 +206,7 @@ export const getVideosOperation = async (operation: any): Promise<any> => {
 
 // --- Live Chat ---
 export const liveConnect = (callbacks: any, config: any): Promise<any> => {
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    const ai = getAiClient();
     return ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-09-2025',
         callbacks,
@@ -210,7 +216,7 @@ export const liveConnect = (callbacks: any, config: any): Promise<any> => {
 
 // --- Text-to-Speech ---
 export const generateSpeech = async (text: string, voice: string): Promise<string> => {
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    const ai = getAiClient();
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash-preview-tts',

@@ -66,7 +66,11 @@ export const DataAnalysisView: React.FC = () => {
         setConversation(prev => [...prev, { role: 'user', content: currentQuestion }, { role: 'model', content: '' }]);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const apiKey = process.env.API_KEY;
+            if (!apiKey) {
+                throw new Error("Gemini API key is not configured. Please ensure the API_KEY environment variable is set.");
+            }
+            const ai = new GoogleGenAI({ apiKey });
             const prompt = `
 You are an expert data analyst. Given the following CSV data, please answer the user's question.
 Provide clear, concise answers. If you generate a table in your response, format it using Markdown.

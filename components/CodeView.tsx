@@ -61,7 +61,11 @@ export const CodeView: React.FC = () => {
         setOutput('');
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const apiKey = process.env.API_KEY;
+            if (!apiKey) {
+                throw new Error("Gemini API key is not configured. Please ensure the API_KEY environment variable is set.");
+            }
+            const ai = new GoogleGenAI({ apiKey });
             const fullPrompt = `Generate a code snippet in ${language} for the following task. Only output the raw code, without any markdown formatting (like \`\`\`${language.toLowerCase()}), explanations, or example usage.
 Task: "${prompt}"`;
             
