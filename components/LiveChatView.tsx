@@ -164,6 +164,7 @@ export const LiveChatView: React.FC = () => {
 
         if (streamRef.current) {
             streamRef.current.getAudioTracks().forEach(track => track.stop());
+            streamRef.current.getVideoTracks().forEach(track => track.stop());
             streamRef.current = null;
         }
         if (scriptProcessorRef.current) scriptProcessorRef.current.disconnect();
@@ -186,14 +187,23 @@ export const LiveChatView: React.FC = () => {
         setError(null);
         setTranscriptions([{ id: 'start', role: MessageRole.SYSTEM, text: 'Connecting...', isFinal: true }]);
 
+        // 1. Get user media
         try {
             const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             streamRef.current = audioStream;
 
-            if(isCameraOn && videoRef.current?.srcObject) {
-                 (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => streamRef.current!.addTrack(track));
+            if (isCameraOn && videoRef.current?.srcObject) {
+                (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => streamRef.current!.addTrack(track));
             }
-            
+        } catch (err) {
+            console.error("Failed to start live conversation:", err);
+            setError("Could not access microphone. Please check permissions and try again.");
+            setIsLive(false);
+            return;
+        }
+        
+        // 2. Connect to the API
+        try {
             inputAudioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
             outputAudioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
             const outputNode = outputAudioContextRef.current.createGain();
@@ -314,10 +324,10 @@ export const LiveChatView: React.FC = () => {
             };
 
             sessionPromiseRef.current = liveConnect(callbacks, config);
-
         } catch (err) {
-            console.error("Failed to start live conversation:", err);
-            setError("Could not access microphone. Please check permissions and try again.");
+             console.error("Failed to start live conversation:", err);
+            const errorMessage = err instanceof Error ? err.message : "An unknown connection error occurred.";
+            setError(`Failed to connect. ${errorMessage}`);
             setIsLive(false);
         }
     };

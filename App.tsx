@@ -267,9 +267,8 @@ function App() {
     const modelMessage: ChatMessage = { id: (Date.now() + 1).toString(), role: MessageRole.MODEL, content: '', groundingSources: [] };
     updateActiveChat(chat => ({ ...chat, messages: [...currentHistory, modelMessage] }));
     
-    chatRef.current = initializeChat(activeChat.model, activeChat.systemPrompt, currentHistory, activeChat.temperature, activeChat.useGoogleSearch, activeChat.topK, activeChat.topP, activeChat.safetySettings, activeChat.maxOutputTokens, activeChat.stopSequences);
-
     try {
+      chatRef.current = initializeChat(activeChat.model, activeChat.systemPrompt, currentHistory, activeChat.temperature, activeChat.useGoogleSearch, activeChat.topK, activeChat.topP, activeChat.safetySettings, activeChat.maxOutputTokens, activeChat.stopSequences);
       const stream = await streamResponse(chatRef.current, prompt, images, abortControllerRef.current.signal);
       let fullResponse = '';
       let finalResponsePacket: GenerateContentResponse | null = null;
