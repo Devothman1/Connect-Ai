@@ -5,6 +5,16 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
+      // ⬇️⬇️ إضافة هذا السطر الأساسي للنشر ⬇️⬇️
+      base: '/Connect-Ai/',
+      
+      // ⬇️⬇️ إضافة إعدادات البناء ⬇️⬇️
+      build: {
+        outDir: 'dist',
+        emptyOutDir: true,
+        sourcemap: false
+      },
+      
       server: {
         port: 3000,
         host: '0.0.0.0',
