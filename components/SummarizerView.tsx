@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { DocumentTextIcon, ConnectAiIcon, SparklesIcon, TrashIcon } from './Icons';
@@ -56,7 +55,7 @@ export const SummarizerView: React.FC = () => {
         setOutput('');
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const prompt = `Provide a ${summaryType === 'bullets' ? 'bullet-point' : 'concise paragraph'} summary of the following text. The summary should capture the main ideas and key information. Format your response using Markdown.
 Text to summarize:
 ---

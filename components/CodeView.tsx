@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { CommandLineIcon, ConnectAiIcon, SparklesIcon } from './Icons';
@@ -62,7 +61,7 @@ export const CodeView: React.FC = () => {
         setOutput('');
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const fullPrompt = `Generate a code snippet in ${language} for the following task. Only output the raw code, without any markdown formatting (like \`\`\`${language.toLowerCase()}), explanations, or example usage.
 Task: "${prompt}"`;
             

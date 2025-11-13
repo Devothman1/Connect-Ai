@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { GoogleGenAI, Chat, GenerateContentResponse, Part } from "@google/genai";
 import { ChatMessage, MessageRole } from '../types';
@@ -8,7 +7,7 @@ import { SendIcon, PaperclipIcon, XCircleIcon, SquareIcon, EyeIcon } from './Ico
 // --- Gemini Service Functions (adapted for this component) ---
 
 const initializeVisionChat = (history: ChatMessage[] = []): Chat => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   return ai.chats.create({
     model: 'gemini-2.5-flash', // This model supports multimodal input
     history: history.map(msg => ({

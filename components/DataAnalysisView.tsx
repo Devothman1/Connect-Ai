@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useMemo } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { ChartBarIcon, ConnectAiIcon, SparklesIcon, TrashIcon, UploadIcon } from './Icons';
@@ -67,7 +66,7 @@ export const DataAnalysisView: React.FC = () => {
         setConversation(prev => [...prev, { role: 'user', content: currentQuestion }, { role: 'model', content: '' }]);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const prompt = `
 You are an expert data analyst. Given the following CSV data, please answer the user's question.
 Provide clear, concise answers. If you generate a table in your response, format it using Markdown.
