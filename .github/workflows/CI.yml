@@ -1,8 +1,8 @@
-name: Vite Build and Deploy
+name: Deploy Vite App
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -11,40 +11,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
           
-      - name: Install dependencies
-        run: npm ci || npm install
-          
-      - name: Build with Vite
-        run: npm run build
-        
-      - name: Create fallback index.html if missing
-        run: |
-          if [ ! -f "dist/index.html" ]; then
-            echo "Creating fallback index.html"
-            mkdir -p dist
-            echo '<!DOCTYPE html><html><head><title>AI Chatbot</title></head><body><div id="root"></div><script type="module" src="/index.tsx"></script></body></html>' > dist/index.html
-          fi
-        
-      - name: Upload to GitHub Pages
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: ./dist
-
-  deploy:
-    needs: build
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
+      - run: npm install
+      - run: npm run build
+      
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
