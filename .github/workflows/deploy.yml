@@ -1,4 +1,4 @@
-herename: Deploy to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -28,8 +28,8 @@ jobs:
           npm install react react-dom @google/genai
           npm install --save-dev @types/node @vitejs/plugin-react typescript vite
           npm install
-          
-      # ⬇️⬇️ أضف هذا الجزء هنا ⬇️⬇️
+      
+      # ✅ This is the crucial step that injects your API key
       - name: Create environment file
         run: |
           echo "VITE_GEMINI_API_KEY=${{ secrets.VITE_GEMINI_API_KEY }}" > .env
