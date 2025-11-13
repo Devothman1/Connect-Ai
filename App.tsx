@@ -302,7 +302,18 @@ function App() {
     } catch (e) {
       if (!(e instanceof Error && e.name === 'AbortError')) {
         const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
-        const errorContent = `**Error:** I seem to be having trouble connecting. Please check your connection and API key, then try again.\n\n> ${errorMessage}`;
+        let errorContent = `**Error:** I seem to be having trouble connecting. Please check your connection and API key, then try again.\n\n> ${errorMessage}`;
+        
+        if (errorMessage.includes("API key is not configured")) {
+            errorContent = `**Configuration Error:** The Gemini API key is missing.
+            
+This application is running in an environment where the API key has not been set. If you are the developer, you need to configure the \`API_KEY\` environment variable for your deployment.
+
+This is a common issue when deploying to static hosting platforms like GitHub Pages directly from source code without a build step that can embed the key.`;
+        } else if (errorMessage.includes("API key not valid")) {
+            errorContent = `**Authentication Error:** The provided Gemini API key is invalid. Please check the key you have configured and ensure it has the necessary permissions.`;
+        }
+        
         updateActiveChat(chat => ({
           ...chat,
           messages: chat.messages.map(m => m.id === modelMessage.id ? { ...m, content: errorContent } : m)

@@ -26,7 +26,14 @@ export const ImageGeneratorView: React.FC = () => {
             const imageUrls = response.generatedImages.map(img => `data:image/jpeg;base64,${img.image.imageBytes}`);
             setGeneratedImages(imageUrls);
         } catch (e) {
-            setError(e instanceof Error ? e.message : 'An unknown error occurred.');
+            const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
+            if (errorMessage.includes("API key is not configured")) {
+                setError("Configuration Error: The Gemini API key is missing. This is required for the app to function.");
+            } else if (errorMessage.includes("API key not valid")) {
+                setError("Authentication Error: The provided Gemini API key is invalid.");
+            } else {
+                setError(errorMessage);
+            }
         } finally {
             setIsLoading(false);
         }

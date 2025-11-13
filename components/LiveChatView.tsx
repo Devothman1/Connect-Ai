@@ -196,7 +196,7 @@ export const LiveChatView: React.FC = () => {
                 (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => streamRef.current!.addTrack(track));
             }
         } catch (err) {
-            console.error("Failed to start live conversation:", err);
+            console.error("Failed to get user media:", err);
             setError("Could not access microphone. Please check permissions and try again.");
             setIsLive(false);
             return;
@@ -325,9 +325,14 @@ export const LiveChatView: React.FC = () => {
 
             sessionPromiseRef.current = liveConnect(callbacks, config);
         } catch (err) {
-             console.error("Failed to start live conversation:", err);
             const errorMessage = err instanceof Error ? err.message : "An unknown connection error occurred.";
-            setError(`Failed to connect. ${errorMessage}`);
+            if (errorMessage.includes("API key is not configured")) {
+                setError("Configuration Error: The Gemini API key is missing. This is required for the app to function.");
+            } else if (errorMessage.includes("API key not valid")) {
+                setError("Authentication Error: The provided Gemini API key is invalid.");
+            } else {
+                setError(`Failed to connect: ${errorMessage}`);
+            }
             setIsLive(false);
         }
     };

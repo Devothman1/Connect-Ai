@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { generateVideos, getVideosOperation } from '../services/geminiService';
 import { ConnectAiIcon, DownloadIcon, PaperclipIcon, VideoIcon, XCircleIcon } from './Icons';
@@ -108,11 +109,16 @@ export const VideoGeneratorView: React.FC = () => {
             pollOperation(operation);
         } catch (e) {
             const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
-            setError(errorMessage);
-            setIsLoading(false);
-            if (errorMessage.includes("Requested entity was not found")) {
+             if (errorMessage.includes("API key is not configured")) {
+                setError("Configuration Error: The Gemini API key is missing. Please select a valid key.");
+                setHasApiKey(false);
+            } else if (errorMessage.includes("API key not valid") || errorMessage.includes("Requested entity was not found")) {
+                setError("Authentication Error: The selected API key is invalid or lacks permissions. Please select another key.");
                 setHasApiKey(false); // Force user to re-select key
+            } else {
+                setError(errorMessage);
             }
+            setIsLoading(false);
         }
     };
     
@@ -137,6 +143,11 @@ export const VideoGeneratorView: React.FC = () => {
                 <p className="mt-2 max-w-lg text-gray-400">
                     To use the Veo video generation model, you need to select an API key associated with a project that has billing enabled.
                 </p>
+                {error && (
+                    <div className="bg-red-900/50 border border-red-500 text-red-300 p-3 rounded-lg my-4 max-w-md">
+                        <p>{error}</p>
+                    </div>
+                )}
                 <button
                     onClick={handleSelectKey}
                     className="mt-6 bg-[var(--accent-color-600)] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[var(--accent-color-500)] transition-colors"

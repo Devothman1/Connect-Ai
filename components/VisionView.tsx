@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { GoogleGenAI, Chat, GenerateContentResponse, Part } from "@google/genai";
 import { ChatMessage, MessageRole } from '../types';
@@ -92,7 +93,13 @@ export const VisionView: React.FC = () => {
             }
         } catch (e) {
             const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
-            setMessages(prev => prev.map(m => m.id === modelMessageId ? { ...m, content: `**Error:** ${errorMessage}` } : m));
+            let errorContent = `**Error:** I seem to be having trouble connecting. Please check your connection and API key, then try again.\n\n> ${errorMessage}`;
+            if (errorMessage.includes("API key is not configured")) {
+                errorContent = `**Configuration Error:** The Gemini API key is missing. This is required for the app to function. If you are the developer, please configure the \`API_KEY\` environment variable.`;
+            } else if (errorMessage.includes("API key not valid")) {
+                errorContent = `**Authentication Error:** The provided Gemini API key is invalid.`;
+            }
+            setMessages(prev => prev.map(m => m.id === modelMessageId ? { ...m, content: errorContent } : m));
         } finally {
             setIsLoading(false);
         }

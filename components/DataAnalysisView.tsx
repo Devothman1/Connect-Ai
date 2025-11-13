@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useMemo } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { ChartBarIcon, ConnectAiIcon, SparklesIcon, TrashIcon, UploadIcon } from './Icons';
@@ -99,7 +100,13 @@ Question: "${currentQuestion}"
             }
         } catch (e) {
             const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
-            setError(errorMessage);
+            if (errorMessage.includes("API key is not configured")) {
+                setError("Configuration Error: The Gemini API key is missing. This is required for the app to function.");
+            } else if (errorMessage.includes("API key not valid")) {
+                setError("Authentication Error: The provided Gemini API key is invalid.");
+            } else {
+                setError(errorMessage);
+            }
             setConversation(prev => prev.slice(0, -2)); // Remove user question and empty model response
         } finally {
             setIsLoading(false);
