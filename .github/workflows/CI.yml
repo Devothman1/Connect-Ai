@@ -10,9 +10,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -21,14 +21,14 @@ jobs:
           node-version: 18
           cache: 'npm'
 
-      - name: Generate package-lock.json
-        run: npm install --package-lock-only
-
-      - name: Install dependencies
-        run: npm install
+      - name: Create package-lock.json and install dependencies
+        run: |
+          npm init -y --silent
+          npm install react react-dom @google/genai
+          npm install --save-dev @types/node @vitejs/plugin-react typescript vite
 
       - name: Build project
-        run: npm run build
+        run: npx vite build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -43,11 +43,9 @@ jobs:
     permissions:
       pages: write
       id-token: write
-    
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
