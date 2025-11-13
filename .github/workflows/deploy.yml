@@ -21,19 +21,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
           
-      - name: Install dependencies
-        run: npm install
-        
+      - name: Install dependencies and create lock file
+        run: |
+          npm init -y --silent
+          npm install react react-dom @google/genai
+          npm install --save-dev @types/node @vitejs/plugin-react typescript vite
+          npm install
+          
       - name: Build project
         run: npm run build
         
       - name: Setup Pages
-        uses: actions/configure-pages@v4  # ⬅️ تم التحديث إلى v4
+        uses: actions/configure-pages@v4
         
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3  # ⬅️ تم التحديث إلى v3
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
@@ -46,4 +49,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4  # ⬅️ تم التحديث إلى v4
+        uses: actions/deploy-pages@v4
