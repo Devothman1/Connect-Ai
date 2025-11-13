@@ -1,8 +1,10 @@
-
 // FIX: The types `VideosOperation` and `LiveSession` are not exported from the library.
 // They have been removed from the import and their usages replaced with `any`.
 import { GoogleGenAI, Chat, Content, Part, Tool, GenerateContentResponse, GenerateImagesResponse, Modality } from "@google/genai";
 import { ChatMessage, MessageRole, SafetySetting } from "../types";
+
+// The API key is injected by the environment.
+const API_KEY = process.env.API_KEY;
 
 const defaultSystemInstruction = 'You are a helpful and friendly AI assistant named Connect Ai. Your goal is to provide accurate and concise information. Format your responses using Markdown for better readability, including code blocks for code snippets. If you are asked "who made you?", "who created you?", or any similar question about your origin, you must say that you were created by a Moroccan developer named Othman&leo, an African technology team. You must provide their contact email: othmanalif10@gmail.com. You cannot create images, videos, or audio. If a user asks you to generate any media, you must politely inform them that you are a text-based AI and do not have this capability. You must not say that you were created by Google or that you are based on Gemini.';
 
@@ -29,11 +31,7 @@ export const initializeChat = (
   maxOutputTokens?: number,
   stopSequences?: string[]
 ): Chat => {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    console.warn("API_KEY environment variable not set at chat initialization");
-  }
-  const ai = new GoogleGenAI({ apiKey: apiKey || "" });
+  const ai = new GoogleGenAI({ apiKey: API_KEY });
 
   const instruction = systemPrompt || defaultSystemInstruction;
   
@@ -113,7 +111,7 @@ export const streamResponse = async (chat: Chat, prompt: string, images?: Array<
 
 // --- Image Generation ---
 export const generateImages = async (prompt: string, numberOfImages: number, aspectRatio: string): Promise<GenerateImagesResponse> => {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
     try {
         const response = await ai.models.generateImages({
             model: 'imagen-4.0-generate-001',
@@ -133,7 +131,7 @@ export const generateImages = async (prompt: string, numberOfImages: number, asp
 
 // --- Image Editing ---
 export const editImage = async (prompt: string, image: { data: string, type: string }): Promise<string> => {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash-image',
@@ -164,7 +162,7 @@ export const editImage = async (prompt: string, image: { data: string, type: str
 // --- Video Generation ---
 // FIX: A required parameter cannot follow an optional parameter. Reordered parameters.
 export const generateVideos = async (prompt: string, config: any, image?: { data: string; type: string; }): Promise<any> => {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
     try {
         let imagePayload;
         if (image) {
@@ -183,15 +181,13 @@ export const generateVideos = async (prompt: string, config: any, image?: { data
         return operation;
     } catch (error) {
         console.error("Error starting video generation:", error);
-        if (error instanceof Error && error.message.includes("Requested entity was not found")) {
-            throw new Error("API key not found or invalid. Please select a valid API key and try again.");
-        }
-        throw new Error("Failed to start video generation. Please check your prompt and API key.");
+        // Let the original error propagate to be handled by the component.
+        throw error;
     }
 };
 
 export const getVideosOperation = async (operation: any): Promise<any> => {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
     try {
         const updatedOperation = await ai.operations.getVideosOperation({ operation });
         return updatedOperation;
@@ -204,7 +200,7 @@ export const getVideosOperation = async (operation: any): Promise<any> => {
 
 // --- Live Chat ---
 export const liveConnect = (callbacks: any, config: any): Promise<any> => {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
     return ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-09-2025',
         callbacks,
@@ -214,7 +210,7 @@ export const liveConnect = (callbacks: any, config: any): Promise<any> => {
 
 // --- Text-to-Speech ---
 export const generateSpeech = async (text: string, voice: string): Promise<string> => {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash-preview-tts',

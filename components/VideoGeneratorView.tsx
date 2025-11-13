@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { generateVideos, getVideosOperation } from '../services/geminiService';
 import { ConnectAiIcon, DownloadIcon, PaperclipIcon, VideoIcon, XCircleIcon } from './Icons';
@@ -106,7 +105,7 @@ export const VideoGeneratorView: React.FC = () => {
             const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
             setError(errorMessage);
             setIsLoading(false);
-            if (errorMessage.includes("API key not found")) {
+            if (errorMessage.includes("Requested entity was not found")) {
                 setHasApiKey(false); // Force user to re-select key
             }
         }

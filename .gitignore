@@ -22,8 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Environment variables ← أضف هذا القسم
-.env
-.env.*
-!.env.example
